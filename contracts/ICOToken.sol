@@ -10,8 +10,23 @@ contract MyICO is ERC20 {
     uint256 public constant SALE_DURATION = 1 days;
 
     // insert contructor() function
+    constructor(uint256 _amount) ERC20("WumiDev", "ICO") {
+        owner = msg.sender;
+        _mint(owner, _amount);
+        startTime = block.timestamp;
+    }
 
     // insert ownerMint() function
+    function ownerMint(uint256 _amount) external {
+        require(msg.sender == owner, "Not the owner");
+        _mint(owner, _amount);
+    }
 
     // insert buyTokens() function
+    function buyTokens(uint256 _amount) external payable {
+        require(block.timestamp <= startTime + SALE_DURATION, "Sale has expired");
+        require(msg.value == _amount * 1000 / 10000, "Wrong amount of ETH sent"); // 1 ETH = 10 tokens (0.1 ETH per token)
+        _mint(msg.sender, _amount);
+    }
+
 }
